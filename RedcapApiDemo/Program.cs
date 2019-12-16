@@ -7,34 +7,22 @@ using System.Linq;
 
 namespace RedcapApiDemo
 {
-    public class Demographic
-    {
-        [JsonRequired]
-        [JsonProperty("record_id")]
-        public string RecordId { get; set; }
-
-        [JsonProperty("first_name")]
-        public string FirstName { get; set; }
-
-        [JsonProperty("last_name")]
-        public string LastName { get; set; }
-    }
     class Program
     {
         /*
          * Change this token for your demo project
          * Using one created from a local dev instance
          */
-        private const string _token = "A8E6949EF4380F1111C66D5374E1AE6C";
+        private const string _token = "1B454E0D5EF57D9BA3DDE1456DD9315B";
         /*
          * Change this token for your demo project
          * Using one created from a local dev instance
         */
-        private const string _superToken = "92F719F0EC97783D06B0E0FF49DC42DDA2247BFDC6759F324EE0D710FCA87C33";
+        private const string _superToken = "";
         /*
          * Using a local redcap development instsance
          */
-        private const string _uri = "http://localhost/redcap/api/";
+        private const string _uri = "http://localhost/redcap/internal/birc/api/";
         static void Main(string[] args)
         {
             /*
@@ -166,12 +154,14 @@ namespace RedcapApiDemo
             /*
              * Create a list of object of type instrument or fields. Add its properties then add it to the list.
              * record_id is required
-             */ 
-            var data = new List<Demographic> {
-                new Demographic {
-                    FirstName = "Jon", LastName = "Doe", RecordId = "1"
-                }
-            };
+             */
+            var data = new List<Demographic>();
+            var importCount = 20;
+
+            for (int i = 1; i <= importCount; i++)
+            {
+                data.Add(SampleData.GetRandomPerson(i.ToString(), true));
+            }
             Console.WriteLine($"Importing record {string.Join(",", data.Select(x=>x.RecordId).ToList())} . . .");
             var ImportRecordsAsync = redcap_api_1_0_7.ImportRecordsAsync(_token, Content.Record, ReturnFormat.json, RedcapDataType.flat, OverwriteBehavior.normal, false, data, "MDY", ReturnContent.count, OnErrorFormat.json).Result;
             var ImportRecordsAsyncData = JsonConvert.DeserializeObject(ImportRecordsAsync);
