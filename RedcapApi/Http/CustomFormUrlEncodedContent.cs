@@ -7,7 +7,9 @@ using System.Text;
 namespace Redcap.Http
 {
     /// <summary>
-    /// https://stackoverflow.com/a/23740338
+    /// This is a custom version of <see cref="FormUrlEncodedContent"/>
+    /// from https://stackoverflow.com/a/23740338
+    /// based on https://github.com/dotnet/corefx/issues/1936#issuecomment-114565197
     /// </summary>
     public class CustomFormUrlEncodedContent : ByteArrayContent
     {
@@ -16,7 +18,7 @@ namespace Redcap.Http
         /// </summary>
         /// <param name="nameValueCollection"></param>
         public CustomFormUrlEncodedContent(IEnumerable<KeyValuePair<string, string>> nameValueCollection)
-            : base(CustomFormUrlEncodedContent.GetContentByteArray(nameValueCollection))
+            : base(GetContentByteArray(nameValueCollection))
         {
             base.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
         }
@@ -34,9 +36,9 @@ namespace Redcap.Http
                     stringBuilder.Append('&');
                 }
 
-                stringBuilder.Append(CustomFormUrlEncodedContent.Encode(current.Key));
+                stringBuilder.Append(Encode(current.Key));
                 stringBuilder.Append('=');
-                stringBuilder.Append(CustomFormUrlEncodedContent.Encode(current.Value));
+                stringBuilder.Append(Encode(current.Value));
             }
             return Encoding.Default.GetBytes(stringBuilder.ToString());
         }
